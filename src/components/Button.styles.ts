@@ -22,4 +22,5 @@ export const ButtonContainer = styled.button<ButtonContainerProps>`
   height: 40px;
 
   background-image: ${(props) => props.theme.colors.primary};
+  color: ${(props) => props.theme.colors};
 `;

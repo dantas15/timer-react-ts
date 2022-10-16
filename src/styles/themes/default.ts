@@ -4,5 +4,6 @@ export const defaultTheme = {
     secondary: 'orange',
     danger: 'red',
     success: 'green',
+    white: 'white',
   },
 };
