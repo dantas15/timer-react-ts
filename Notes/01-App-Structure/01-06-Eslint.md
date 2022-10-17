@@ -1,0 +1,1 @@
+- [My notes about ESLint](https://www.notion.so/gusgalote/Configuring-ESLint-in-a-Vanilla-React-TS-project-f2d9bd1b203c49688ea3c47383406f32#7d795793ed024c5193609ef5bb2fe170)
