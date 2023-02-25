@@ -30,7 +30,7 @@ const form = useForm({
 
 # Infer type from zod schema
 
-Use `[z.infer`](https://github.com/colinhacks/zod#type-inference):
+Use [`z.infer`](https://github.com/colinhacks/zod#type-inference):
 
 ```tsx
 type NewCycleFormData = z.infer<typeof newCycleFormValidationSchema
