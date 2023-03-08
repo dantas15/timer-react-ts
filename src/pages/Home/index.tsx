@@ -21,7 +21,7 @@ const newCycleFormValidationSchema = z.object({
   minutesAmount: z
     .number()
     .min(1, 'How long will you be working on it?')
-    .min(5, 'the cycle must have at least 5 minutes')
+    .min(1, 'the cycle must have at least 5 minutes')
     .max(60, 'the cycle must have at most 60 minutes'),
 })
 
@@ -33,6 +33,7 @@ interface Cycle {
   minutesAmount: number
   startedAt: Date
   stoppedAt?: Date
+  finishedAt?: Date
 }
 
 export function Home() {
@@ -50,20 +51,39 @@ export function Home() {
 
   const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId)
 
+  const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0
+
   useEffect(() => {
     let interval: number
 
     if (activeCycle) {
       interval = setInterval(() => {
-        setSecondsAmountPassed(
-          differenceInSeconds(new Date(), activeCycle.startedAt),
+        const secondsDifference = differenceInSeconds(
+          new Date(),
+          activeCycle.startedAt,
         )
+
+        if (secondsDifference >= totalSeconds) {
+          setCycles((state) =>
+            state.map((cycle) =>
+              cycle.id === activeCycleId
+                ? { ...cycle, finishedAt: new Date() }
+                : cycle,
+            ),
+          )
+
+          setActiveCycleId(null)
+          setSecondsAmountPassed(totalSeconds)
+          clearInterval(interval)
+        } else {
+          setSecondsAmountPassed(secondsDifference)
+        }
       }, 1000)
     }
     return () => {
       clearInterval(interval)
     }
-  }, [activeCycle])
+  }, [activeCycle, totalSeconds, activeCycleId])
 
   function handleCreateNewCycle(data: NewCycleFormData) {
     const id = String(new Date().getTime())
@@ -83,8 +103,8 @@ export function Home() {
   }
 
   function handleStopCycle() {
-    setCycles(
-      cycles.map((cycle) =>
+    setCycles((state) =>
+      state.map((cycle) =>
         cycle.id === activeCycleId
           ? { ...cycle, stoppedAt: new Date() }
           : cycle,
@@ -94,7 +114,6 @@ export function Home() {
     setActiveCycleId(null)
   }
 
-  const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0
   const currentSeconds = activeCycle ? totalSeconds - secondsAmountPassed : 0
 
   const minutesAmount = Math.floor(currentSeconds / 60)
@@ -132,7 +151,7 @@ export function Home() {
             id="minutesAmount"
             placeholder="00"
             step={5}
-            min={5}
+            min={1}
             max={60}
             disabled={!!activeCycle}
             {...form.register('minutesAmount', { valueAsNumber: true })}
