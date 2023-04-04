@@ -72,7 +72,6 @@ export function Home() {
             ),
           )
 
-          setActiveCycleId(null)
           setSecondsAmountPassed(totalSeconds)
           clearInterval(interval)
         } else {
