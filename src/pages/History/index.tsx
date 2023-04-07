@@ -1,6 +1,10 @@
+import { useContext } from 'react'
 import { HistoryContainer, HistoryList, Status } from './styles'
+import { CyclesContext } from '../../contexts/CyclesContext'
 
 export function History() {
+  const { cycles } = useContext(CyclesContext)
+
   return (
     <HistoryContainer>
       <h1>My history</h1>
@@ -16,30 +20,22 @@ export function History() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>task</td>
-              <td>20 minutes</td>
-              <td>2 months ago</td>
-              <td>
-                <Status statusColor="green">Finished</Status>
-              </td>
-            </tr>
-            <tr>
-              <td>task</td>
-              <td>20 minutes</td>
-              <td>2 months ago</td>
-              <td>
-                <Status statusColor="red">Interrupted</Status>
-              </td>
-            </tr>
-            <tr>
-              <td>task</td>
-              <td>20 minutes</td>
-              <td>2 months ago</td>
-              <td>
-                <Status statusColor="yellow">Doing</Status>
-              </td>
-            </tr>
+            {cycles.map((cycle) => (
+              <tr key={cycle.id}>
+                <td>{cycle.task}</td>
+                <td>{cycle.minutesAmount} minutes</td>
+                <td>{cycle.startedAt.toISOString()}</td>
+                <td>
+                  {cycle.finishedAt ? (
+                    <Status statusColor="green">Finished</Status>
+                  ) : cycle.stoppedAt ? (
+                    <Status statusColor="red">Interrupted</Status>
+                  ) : (
+                    <Status statusColor="yellow">In progress</Status>
+                  )}
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </HistoryList>
