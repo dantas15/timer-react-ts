@@ -1,3 +1,5 @@
+import { produce } from 'immer'
+
 import { Cycle } from '../../contexts/CyclesContext'
 import { ActionTypes, CyclesActions } from './actions'
 
@@ -14,21 +16,27 @@ interface Action {
 export function cyclesReducer(state: CyclesState, action: Action) {
   switch (action.type) {
     case CyclesActions.CREATE_NEW_CYCLE:
-      return {
-        ...state,
-        cycles: [...state.cycles, action.payload.newCycle],
-        activeCycleId: action.payload.newCycle.id,
+      // return {
+      //   ...state,
+      //   cycles: [...state.cycles, action.payload.newCycle],
+      //   activeCycleId: action.payload.newCycle.id,
+      // }
+      return produce(state, (draft) => {
+        draft.cycles.push(action.payload.newCycle)
+        draft.activeCycleId = action.payload.newCycle.id
+      })
+    case CyclesActions.STOP_CURRENT_CYCLE: {
+      const currentCycleIndex = state.cycles.findIndex((cycle) => {
+        return cycle.id === state.activeCycleId
+      })
+
+      if (currentCycleIndex < 0) {
+        return state
       }
-    case CyclesActions.STOP_CURRENT_CYCLE:
-      return {
-        ...state,
-        cycles: state.cycles.map((cycle) =>
-          cycle.id === state.activeCycleId
-            ? { ...cycle, stoppedAt: new Date() }
-            : cycle,
-        ),
-        activeCycleId: null,
-      }
+      return produce(state, (draft) => {
+        draft.activeCycleId = null
+      })
+    }
     case CyclesActions.MARK_CURRENT_CYCLE_AS_FINISHED:
       return {
         ...state,
